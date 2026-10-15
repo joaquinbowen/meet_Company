@@ -1,4 +1,14 @@
 import { useState } from 'react';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts';
 import { allocateLotCosts, companies, products } from '@meetcompany/demo-domain';
 import { DataTable, type Column } from '../components/DataTable';
 import { visibleMovements } from '../domain/access';
@@ -77,6 +87,20 @@ export function Rentabilidad() {
   const totalMargin = totalRevenue - totalCost;
   const overallMarginPercent = totalRevenue > 0 ? (totalMargin / totalRevenue) * 100 : 0;
 
+  // Datos para el gráfico de línea cronológico
+  const timelineData = rows.map((r, index) => {
+    const timeLabel = r.date.slice(11, 16) || `0${index + 8}:00`;
+    return {
+      name: `${timeLabel} · ${r.product}`,
+      time: timeLabel,
+      product: r.product,
+      ingresos: Math.round(r.revenue / 100),
+      costos: Math.round(r.cost / 100),
+      margen: Math.round(r.margin / 100),
+      kg: Number((r.grams / 1000).toFixed(1)),
+    };
+  });
+
   const columns: Column<Row>[] = [
     { key: 'date', label: 'Fecha', text: r => date(r.date), sort: r => r.date },
     { key: 'company', label: 'Empresa', text: r => r.company },
@@ -101,8 +125,9 @@ export function Rentabilidad() {
           <h2>Rentabilidad, ingresos y márgenes</h2>
           <p>Simulación económica completa para todos los productos y despachos activos en planta.</p>
         </div>
-        <div className="inline-stat" style={{ fontSize: '18px', textAlign: 'right' }}>
-          <strong>{rows.length} de {rows.length}</strong> con margen simulado
+        <div className="inline-stat-card">
+          <small>Despachos con margen</small>
+          <strong>{rows.length} órdenes evaluadas</strong>
         </div>
       </div>
 
@@ -127,6 +152,74 @@ export function Rentabilidad() {
           <strong>{kg(totalGrams)}</strong>
           <small>{rows.length} órdenes de entrega</small>
         </div>
+      </section>
+
+      {/* Gráfico de línea temporal de KPIs */}
+      <section className="surface chart-surface" style={{ marginBottom: '22px', padding: '20px 24px' }}>
+        <div className="section-head">
+          <div>
+            <h2>Evolución de rentabilidad en el tiempo</h2>
+            <p>Comportamiento cronológico de ingresos, costos y margen bruto a lo largo de las órdenes del periodo.</p>
+          </div>
+          <span className="section-tag">{rows.length} despachos simulados</span>
+        </div>
+
+        {timelineData.length > 0 ? (
+          <div style={{ width: '100%', height: 280, marginTop: '16px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={timelineData} margin={{ top: 12, right: 30, left: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EDE7DF" />
+                <XAxis dataKey="name" tickLine={false} axisLine={{ stroke: '#EDE7DF' }} fontSize={11} stroke="#746F6A" />
+                <YAxis
+                  tickLine={false}
+                  axisLine={{ stroke: '#EDE7DF' }}
+                  fontSize={11}
+                  stroke="#746F6A"
+                  tickFormatter={(val) => `$${val}`}
+                />
+                <Tooltip
+                  formatter={(value: any, name: any) => [
+                    `$${Number(value).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`,
+                    name === 'ingresos' ? 'Ingreso estimado' : name === 'costos' ? 'Costo asignado' : 'Margen bruto',
+                  ]}
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E5DFD7', fontSize: '12px' }}
+                />
+                <Legend
+                  wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                  formatter={(value) =>
+                    value === 'ingresos' ? 'Ingresos ($)' : value === 'costos' ? 'Costo Asignado ($)' : 'Margen Bruto ($)'
+                  }
+                />
+                <Line
+                  type="monotone"
+                  dataKey="ingresos"
+                  stroke="#2F6B45"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: '#2F6B45' }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="costos"
+                  stroke="#A9431E"
+                  strokeWidth={2}
+                  strokeDasharray="4 4"
+                  dot={{ r: 4, fill: '#A9431E' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="margen"
+                  stroke="#1D4ED8"
+                  strokeWidth={2.5}
+                  dot={{ r: 5, fill: '#1D4ED8' }}
+                  activeDot={{ r: 7 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="chart-empty">No hay despachos con margen en el rango de fechas seleccionado.</div>
+        )}
       </section>
 
       <div className="filter-bar">

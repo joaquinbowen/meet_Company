@@ -1,5 +1,5 @@
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { BarChart3, BookOpen, Boxes, ChartNoAxesCombined, ChevronDown, ClipboardList, LayoutDashboard, Menu, RefreshCcw, X } from 'lucide-react';
+import { BarChart3, BookOpen, Boxes, ChartNoAxesCombined, ChevronDown, ClipboardList, LayoutDashboard, Menu, RefreshCcw, Users, X } from 'lucide-react';
 import { companies, type CompanyId } from '@meetcompany/demo-domain';
 import { useAdminStore, type Context, type Profile } from './store/useAdminStore';
 import { lazy, Suspense, useState } from 'react';
@@ -13,6 +13,7 @@ const nav = [
   { path: '/trazabilidad', label: 'Trazabilidad', icon: ClipboardList },
   { path: '/rentabilidad', label: 'Rentabilidad', icon: BarChart3 },
   { path: '/catalogo', label: 'Catálogo', icon: BookOpen },
+  { path: '/usuarios', label: 'Usuarios', icon: Users },
 ];
 const Dashboard = lazy(() => import('./pages/Dashboard').then((module) => ({ default: module.Dashboard })));
 const Produccion = lazy(() => import('./pages/Produccion').then((module) => ({ default: module.Produccion })));
@@ -20,6 +21,7 @@ const Inventario = lazy(() => import('./pages/Inventario').then((module) => ({ d
 const Trazabilidad = lazy(() => import('./pages/Trazabilidad').then((module) => ({ default: module.Trazabilidad })));
 const Rentabilidad = lazy(() => import('./pages/Rentabilidad').then((module) => ({ default: module.Rentabilidad })));
 const CatalogoPlantillas = lazy(() => import('./pages/CatalogoPlantillas').then((module) => ({ default: module.CatalogoPlantillas })));
+const Usuarios = lazy(() => import('./pages/Usuarios').then((module) => ({ default: module.Usuarios })));
 
 const names: Record<Context, string> = { group: 'Consolidado Grupo Rodrigo', warehouse: 'Almacén físico · Meet Company', meet: 'Meet Company · propietaria', rodrigo: 'Rodrigo', quality: 'Quality', finilong: 'Finilong' };
 const roles: Record<Profile, string> = { management: 'Gerencia', 'company-admin': 'Administrador de empresa', 'warehouse-chief': 'Jefe de almacén' };
@@ -78,6 +80,8 @@ function Shell() {
                   ? 'Una lectura clara de lo que entró, se transformó y salió.'
                   : location.pathname === '/catalogo'
                   ? 'Maestro de productos, materias primas y plantillas de rendimiento.'
+                  : location.pathname === '/usuarios'
+                  ? 'Gestión de usuarios, permisos y credenciales de acceso a planta.'
                   : 'Datos de los tres flujos de demostración.'}
               </p>
             </div>
@@ -102,6 +106,7 @@ function Shell() {
               <Route path="/trazabilidad" element={<Trazabilidad/>}/>
               <Route path="/rentabilidad" element={profile === 'warehouse-chief' ? <Navigate to="/" replace/> : <Rentabilidad/>}/>
               <Route path="/catalogo" element={<CatalogoPlantillas/>}/>
+              <Route path="/usuarios" element={<Usuarios/>}/>
               <Route path="*" element={<Navigate to="/" replace/>}/>
             </Routes>
           </Suspense>

@@ -16,6 +16,9 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Info,
+  AlertCircle,
+  Scale,
 } from 'lucide-react';
 import { companies, type CompanyId } from '@meetcompany/demo-domain';
 import { useCatalogStore, excelSimulatedPackage, type CatalogProduct, type CutTemplate } from '../store/useCatalogStore';
@@ -176,9 +179,10 @@ export function CatalogoPlantillas() {
           <h2>Maestro de catálogo y rendimiento</h2>
           <p>Materias primas, cortes derivados y plantillas de rendimiento porcentual de desposte.</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div className="inline-stat" style={{ fontSize: '20px' }}>
-            {filteredProducts.length} productos
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="inline-stat-card">
+            <small>Total en catálogo</small>
+            <strong>{filteredProducts.length} productos</strong>
           </div>
           {(excelImported || formSubmitted) && (
             <button
@@ -187,7 +191,7 @@ export function CatalogoPlantillas() {
               style={{ color: '#746F6A', border: '1px solid #D6CEC5' }}
               title="Restablecer al catálogo base inicial"
             >
-              <RotateCcw size={15} />
+              <RotateCcw size={14} />
               <span>Restablecer demo</span>
             </button>
           )}
@@ -228,7 +232,7 @@ export function CatalogoPlantillas() {
           >
             {excelImported && formSubmitted ? (
               <>
-                <CheckCircle2 size={16} /> ¡Flujo 100% simulado (3 nuevos productos)!
+                <CheckCircle2 size={16} /> Flujo 100% simulado (3 nuevos productos)
               </>
             ) : (
               <>
@@ -262,7 +266,7 @@ export function CatalogoPlantillas() {
                   fontWeight: 700,
                 }}
               >
-                ✓
+                <Check size={12} />
               </span>
               <strong style={{ fontSize: '13px' }}>1. Catálogo Base Inicial</strong>
             </div>
@@ -307,7 +311,7 @@ export function CatalogoPlantillas() {
                   fontWeight: 700,
                 }}
               >
-                {excelImported ? '✓' : '2'}
+                {excelImported ? <Check size={12} /> : '2'}
               </span>
               <strong style={{ fontSize: '13px' }}>2. Carga Masiva vía Excel (2 productos)</strong>
             </div>
@@ -377,7 +381,7 @@ export function CatalogoPlantillas() {
                   fontWeight: 700,
                 }}
               >
-                {formSubmitted ? '✓' : '3'}
+                {formSubmitted ? <Check size={12} /> : '3'}
               </span>
               <strong style={{ fontSize: '13px' }}>3. Formulario Manual (3er producto)</strong>
             </div>
@@ -1154,6 +1158,7 @@ export function CatalogoPlantillas() {
               </button>
             </div>
 
+            {/* Aviso informativo limpio sin emojis */}
             <div
               style={{
                 background: '#FAF3ED',
@@ -1164,11 +1169,13 @@ export function CatalogoPlantillas() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                gap: '12px',
               }}
             >
-              <span style={{ fontSize: '12px', color: '#843315' }}>
-                💡 Puedes escribir tus propios datos o pulsar el botón para precargar el 3er producto sugerido (Pavo Entero).
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#843315' }}>
+                <Info size={16} color="#A9431E" />
+                <span>Puedes ingresar datos personalizados o utilizar el autocompletado del 3er producto sugerido (Pavo Entero).</span>
+              </div>
               <button
                 type="button"
                 onClick={fillSampleThirdProduct}
@@ -1176,15 +1183,18 @@ export function CatalogoPlantillas() {
                   background: '#A9431E',
                   color: '#fff',
                   border: 'none',
-                  padding: '5px 10px',
+                  padding: '6px 12px',
                   borderRadius: '5px',
                   fontSize: '11px',
                   fontWeight: 650,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}
               >
-                ⚡ Rellenar Pavo Entero
+                <Sparkles size={13} /> Rellenar Pavo Entero
               </button>
             </div>
 
@@ -1292,11 +1302,15 @@ export function CatalogoPlantillas() {
                       fontWeight: 700,
                       padding: '4px 10px',
                       borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
                       background: isYieldBalanced ? '#E7F2E6' : '#FEF3C7',
                       color: isYieldBalanced ? '#2F6B45' : '#B45309',
                     }}
                   >
-                    Suma total: {totalYield}% {isYieldBalanced ? '✓ 100% Equilibrado' : '⚠️ Debe sumar 100%'}
+                    {isYieldBalanced ? <Check size={14} /> : <AlertCircle size={14} />}
+                    <span>Suma total: {totalYield}% {isYieldBalanced ? '(100% Equilibrado)' : '(Debe sumar 100%)'}</span>
                   </div>
                 </div>
 
