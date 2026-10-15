@@ -13,5 +13,5 @@
       "@meetcompany/demo-domain": ["./src/demo-domain/index.ts"]
     }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src"]
 }
